@@ -260,13 +260,15 @@ export class CorpusMeta implements ResourceGovernor<SourceEntry> {
         }
       }
 
-      // Coverage computation — which repos have code-reality files
-      // Some repos use code-reality-{name}, dixie uses dixie-architecture
+      // Coverage computation — which repos have knowledge sources
+      // Product repos share a common 'product-repos' source ID
       const KNOWN_REPOS: Array<{ repo: string; sourceIds: string[] }> = [
-        { repo: 'loa-finn', sourceIds: ['code-reality-finn'] },
-        { repo: 'loa-freeside', sourceIds: ['code-reality-freeside'] },
-        { repo: 'loa-hounfour', sourceIds: ['code-reality-hounfour'] },
-        { repo: 'loa-dixie', sourceIds: ['dixie-architecture', 'code-reality-dixie'] },
+        { repo: 'midi-interface', sourceIds: ['product-repos'] },
+        { repo: 'mibera-honeyroad', sourceIds: ['product-repos'] },
+        { repo: 'mcv-interface', sourceIds: ['product-repos'] },
+        { repo: 'cubquests-interface', sourceIds: ['product-repos'] },
+        { repo: 'set-and-forgetti', sourceIds: ['product-repos'] },
+        { repo: 'apdao-auction-house', sourceIds: ['product-repos'] },
       ];
       const reposWithCodeReality: string[] = [];
       const reposMissingCodeReality: string[] = [];
