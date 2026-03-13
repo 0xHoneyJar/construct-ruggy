@@ -3,6 +3,9 @@ import type { FinnClient } from '../proxy/finn-client.js';
 import type { AgentIdentity } from '../types.js';
 import { getRequestContext } from '../validation.js';
 
+/** Agent identity constant — single source of truth for agent ID across routes. */
+export const AGENT_ID = 'ruggy';
+
 /**
  * ADR: Hono sub-app typing
  *
@@ -19,32 +22,32 @@ import { getRequestContext } from '../validation.js';
  */
 
 /**
- * Oracle identity — subset of Hounfour AgentIdentity protocol type.
+ * Agent identity — subset of Hounfour AgentIdentity protocol type.
  *
  * Aligned: loa-hounfour/AgentIdentity
- * The OracleIdentity shape is a projection of AgentIdentity fields relevant
- * to the Oracle dNFT. When loa-finn's identity graph returns full AgentIdentity
+ * This shape is a projection of AgentIdentity fields relevant
+ * to the agent dNFT. When loa-finn's identity graph returns full AgentIdentity
  * objects, this subset ensures backward-compatible API responses.
  */
-interface OracleIdentity {
+interface AgentIdentityResponse {
   nftId: string;
   name: string;
   damp96_summary: Record<string, unknown> | null;
   beauvoir_hash: string | null;
 }
 
-/** Cached oracle identity (stable data, 5 minute cache) */
-let cachedIdentity: { data: OracleIdentity; expiresAt: number } | null = null;
+/** Cached agent identity (stable data, 5 minute cache) */
+let cachedIdentity: { data: AgentIdentityResponse; expiresAt: number } | null = null;
 const IDENTITY_CACHE_TTL_MS = 5 * 60 * 1000;
 
 /**
- * Identity routes — Oracle dNFT identity via loa-finn identity graph.
+ * Identity routes — agent dNFT identity via loa-finn identity graph.
  */
 export function createIdentityRoutes(finnClient: FinnClient): Hono {
   const app = new Hono();
 
-  /** GET /oracle — Oracle identity information */
-  app.get('/oracle', async (c) => {
+  /** GET /:agentId — Agent identity information */
+  app.get(`/${AGENT_ID}`, async (c) => {
     const { requestId } = getRequestContext(c);
 
     // Check cache
@@ -54,9 +57,9 @@ export function createIdentityRoutes(finnClient: FinnClient): Hono {
     }
 
     try {
-      const result = await finnClient.request<OracleIdentity>(
+      const result = await finnClient.request<AgentIdentityResponse>(
         'GET',
-        '/api/identity/oracle',
+        `/api/identity/${AGENT_ID}`,
         { headers: { 'X-Request-Id': requestId } },
       );
 
@@ -64,9 +67,9 @@ export function createIdentityRoutes(finnClient: FinnClient): Hono {
       return c.json(result);
     } catch {
       // Graceful degradation — return placeholder if identity graph not populated
-      const fallback: OracleIdentity = {
-        nftId: 'oracle',
-        name: 'The Oracle',
+      const fallback: AgentIdentityResponse = {
+        nftId: AGENT_ID,
+        name: 'Ruggy',
         damp96_summary: null,
         beauvoir_hash: null,
       };

@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
 import { z } from 'zod';
 import type { FinnClient } from '../proxy/finn-client.js';
+import { AGENT_ID } from './identity.js';
 import type { SignalEmitter } from '../services/signal-emitter.js';
 import { isValidPathParam, getRequestContext } from '../validation.js';
 import { handleRouteError } from '../utils/error-handler.js';
@@ -104,7 +105,7 @@ export function createChatRoutes(finnClient: FinnClient, deps?: ChatRouteDeps): 
         '/api/sessions',
         {
           body: {
-            agentId: 'oracle',
+            agentId: AGENT_ID,
             prompt: body.prompt,
           },
           headers: {

@@ -1,0 +1,26 @@
+# Ruggy Agent Binding Configuration
+# Loaded by loa-finn's provider registry to configure the Ruggy agent.
+#
+# This file tells loa-finn how to route requests for the Ruggy agent:
+# which model to use, what persona to load, and where to find knowledge sources.
+
+agent_id: ruggy
+name: Ruggy
+description: "Ecosystem triage intelligence for the 0xHoneyJar product surface"
+
+# Model configuration
+model:
+  pool: default
+  temperature: 0.3  # Consistent, evidence-based responses
+  max_tokens: 4096
+
+# Knowledge enrichment
+knowledge:
+  mode: full  # Use full enrichment pipeline
+  default_budget_tokens: 30000
+  sources_path: knowledge/sources.json
+
+# Identity
+identity:
+  type: hand_crafted
+  persona_path: persona/ruggy.md
