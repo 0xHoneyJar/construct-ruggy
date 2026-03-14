@@ -1,0 +1,88 @@
+# scripts/MANIFEST.yaml — Machine-readable tool declarations
+#
+# Lets agents discover what scripts are available, how to invoke them,
+# and what to expect back — without reading source code.
+
+scripts:
+
+  - name: corpus-diff
+    description: "Git log --stat for knowledge — compares current knowledge corpus against a git ref to show sources added/removed/updated, corpus_version delta, and new events"
+    entry: corpus-diff.sh
+    runtime: bash
+    args:
+      - name: --ref
+        type: string
+        required: false
+        default: "HEAD~1"
+        description: "Git ref to compare against (commit SHA, branch, tag)"
+      - name: --json
+        type: flag
+        required: false
+        description: "Output machine-readable JSON instead of human-readable text"
+    output:
+      format: text | json
+      fields:
+        ref: "string — git ref compared against"
+        corpus_version: "object — {from, to} version delta"
+        sources_added: "array — source IDs added since ref"
+        sources_removed: "array — source IDs removed since ref"
+        sources_updated_count: "integer — sources whose last_updated changed"
+        new_events: "array — corpus events with seq > ref max seq"
+        new_event_count: "integer — number of new events"
+    side_effects: []
+    credentials: []
+    danger_level: safe
+
+  - name: knowledge-coverage
+    description: "Knowledge corpus coverage report — source count by tag, repository coverage, token budget utilization, and freshness summary"
+    entry: knowledge-coverage.sh
+    runtime: bash
+    args: []
+    output:
+      format: text
+      fields:
+        corpus_version: "integer — current corpus version"
+        total_sources: "integer — total knowledge sources"
+        required_sources: "integer — sources marked required"
+        tag_distribution: "map — source count per tag"
+        repo_coverage: "map — per-repo status (code-reality or architecture file present)"
+        budget_tokens: "integer — configured token budget"
+        max_allocated_tokens: "integer — sum of per-source maxTokens"
+        actual_estimated_tokens: "integer — estimated tokens from file sizes"
+        utilization_pct: "integer — actual/budget percentage"
+        healthy: "integer — sources within max_age_days"
+        stale: "integer — sources exceeding max_age_days"
+    side_effects: []
+    credentials: []
+    danger_level: safe
+
+  - name: knowledge-drift
+    description: "ArgoCD for knowledge — parses <!-- upstream-source --> markers from knowledge source files and reports drift days since last sync"
+    entry: knowledge-drift.sh
+    runtime: bash
+    args:
+      - name: --threshold
+        type: integer
+        required: false
+        default: 30
+        description: "Maximum allowed drift in days before a source is marked stale"
+      - name: --date
+        type: string
+        required: false
+        description: "Override today's date (YYYY-MM-DD) for deterministic testing"
+      - name: --json
+        type: flag
+        required: false
+        description: "Output machine-readable JSON instead of human-readable text"
+    output:
+      format: text | json
+      fields:
+        threshold: "integer — drift threshold in days"
+        today: "string — date used for calculation"
+        total: "integer — files with upstream-source markers"
+        stale: "integer — files exceeding drift threshold"
+        ok: "integer — files within drift threshold"
+        files: "array — per-file {file, repo, last_synced, drift_days, status}"
+    side_effects: []
+    credentials: []
+    danger_level: safe
