@@ -1,0 +1,37 @@
+schema_version: 3
+name: Ruggy
+slug: ruggy
+version: 0.1.0
+description: "Ecosystem triage intelligence for the HoneyJar product ecosystem. Persona-bot that grounds responses in deployment logs, error traces, user-reported bugs, and behavioral surfaces across six interconnected products (midi-interface, mibera-honeyroad, mcv-interface, cubquests-interface, set-and-forgetti, apdao-auction-house). Reads collection signals; writes voice artifacts (Discord messages, narrator output)."
+short_description: "Ecosystem triage persona-bot — grounded diagnostic voice"
+author: 0xHoneyJar
+license: MIT
+visibility: public
+
+personas:
+  - RUGGY
+
+streams:
+  reads:
+    - Intent
+    - Operator-Model
+    - Signal
+  writes:
+    - Artifact
+
+repository:
+  url: https://github.com/0xHoneyJar/construct-ruggy.git
+
+capabilities:
+  model_tier: sonnet
+  danger_level: moderate
+  effort_hint: medium
+  downgrade_allowed: true
+  execution_hint: sequential
+  requires:
+    tool_calling: true
+    thinking_traces: false
+    vision: false
+
+identity:
+  persona: persona/ruggy.md
